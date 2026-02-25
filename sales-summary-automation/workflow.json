@@ -1,0 +1,170 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1ANsbzTIszc8b4s1qyoYNhQISVU8Tk5WfPWYY1k-gnjg",
+          "mode": "list",
+          "cachedResultName": "test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ANsbzTIszc8b4s1qyoYNhQISVU8Tk5WfPWYY1k-gnjg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ANsbzTIszc8b4s1qyoYNhQISVU8Tk5WfPWYY1k-gnjg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        208,
+        48
+      ],
+      "id": "d6ed0b86-b722-4053-8b9e-6177d1fee821",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "fOIOEKozJ9jrYtr7",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "Order ID"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        48
+      ],
+      "id": "98fe75b9-6fab-49e1-adfc-8a4edeefab29",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "sendTo": "setayesh.kamali.dolatabadi2002@gmail.com",
+        "subject": "Sales Summary",
+        "message": "=<h1>Sales Summary Report</h1> <p><b>Total Orders:</b> {{$json[\"count_Order_ID\"]}}</p> <p>This email was generated automatically from Google Sheets.</p> <hr> <i>This email was sent automatically with n8n</i>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        48
+      ],
+      "id": "8c9a3eb3-162c-42da-824b-ea00cf8c5eff",
+      "name": "Send a message",
+      "webhookId": "e42e0f48-1461-41ee-9df4-8aaaf34384bc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3KMnGjTQiAJSwFIo",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "934c67e0-1539-4283-bc08-a59c2d8f2b42",
+              "leftValue": "={{$json[\"processed\"]}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        64
+      ],
+      "id": "8b330219-2bc6-4b6e-b811-46af24c7ff66",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0424d354-56cc-48f0-ba9a-5cd92b151d37",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3ccb07952a7b6131dd6942e66f15a8a332e5ff4197b9d6208967e8f9f96ffe54"
+  },
+  "id": "UU1LmvHZNKp8NO4K",
+  "tags": []
+}
