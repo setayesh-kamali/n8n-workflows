@@ -15,3 +15,15 @@ Sales Summary automation:
 - Send automatic email report
 ## Why this repo
 I use this space to practice building automation systems and personal AI agents step by step.
+## Workflows
+
+### Sales Summary Automation
+
+Automatically sends an email report when Google Sheets data changes.
+
+Flow:
+
+- Google Sheets trigger detects updates
+- IF node checks conditions
+- Summarize node counts total orders
+- Gmail sends automated report
