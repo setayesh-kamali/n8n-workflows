@@ -1,0 +1,202 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        -16
+      ],
+      "id": "462aaf60-14c7-45cf-baac-ce353b6a4c60",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "setayesh.kamali.dolatabadi2002@gmail.com",
+          "mode": "list",
+          "cachedResultName": "setayesh.kamali.dolatabadi2002@gmail.com"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $today }}",
+        "timeMax": "={{ $today.plus({ days: 1 }) }}",
+        "options": {
+          "timeZone": {
+            "__rl": true,
+            "value": "Europe/Berlin",
+            "mode": "list",
+            "cachedResultName": "Europe/Berlin"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        -16
+      ],
+      "id": "537cf12e-aaf3-4e59-a777-5d0fd9d8428e",
+      "name": "Get many events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "inErGyPAKtosMXDX",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63d4d4ea-f66b-478f-9295-9ecf1a7f8628",
+              "name": "Name",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "b4ea05db-e1b1-4d0b-8933-ca66260cf6d1",
+              "name": "Time",
+              "value": "={{ $json.start }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        -16
+      ],
+      "id": "0f62ac96-b544-4bdb-835f-cbf7369cbdb1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (Run Once for All Items)\n// Input: items = list of Google Calendar events (or your mapped Set node output)\n// Output: 1 item with { message } ready to send to Telegram\n\nconst TZ = 'Europe/Berlin';\n\nconst fmtTime = new Intl.DateTimeFormat('de-DE', {\n  hour: '2-digit',\n  minute: '2-digit',\n  timeZone: TZ,\n});\n\nconst fmtDate = new Intl.DateTimeFormat('de-DE', {\n  weekday: 'short',\n  day: '2-digit',\n  month: '2-digit',\n  year: 'numeric',\n  timeZone: TZ,\n});\n\nfunction getTitle(json) {\n  return json.Name || json.summary || json.title || 'Untitled';\n}\n\nfunction getStartISO(json) {\n  const startObj = json.Time || json.start;\n  if (!startObj) return null;\n  if (startObj.dateTime) return startObj.dateTime;\n  if (startObj.date) return startObj.date; // all-day\n  return null;\n}\n\nfunction isAllDay(json) {\n  const startObj = json.Time || json.start;\n  return !!(startObj && startObj.date && !startObj.dateTime);\n}\n\nfunction sortKey(iso) {\n  if (!iso) return Number.POSITIVE_INFINITY;\n  const d = new Date(iso);\n  const t = d.getTime();\n  return Number.isFinite(t) ? t : Number.POSITIVE_INFINITY;\n}\n\n// Build normalized events\nconst events = items\n  .map(({ json }) => {\n    const iso = getStartISO(json);\n    return {\n      title: getTitle(json),\n      iso,\n      allDay: isAllDay(json),\n    };\n  })\n  .sort((a, b) => sortKey(a.iso) - sortKey(b.iso));\n\n// Header\nlet message = `📅 Meetings (${TZ})\\n`;\nmessage += `${fmtDate.format(new Date())}\\n\\n`;\n\nif (events.length === 0) {\n  message += `No meetings found for today. ✅`;\n  return [{ json: { message } }];\n}\n\n// List\nfor (const ev of events) {\n  if (!ev.iso) {\n    message += `• ${ev.title} — (no time)\\n`;\n    continue;\n  }\n\n  if (ev.allDay) {\n    message += `• ${ev.title} — All day\\n`;\n    continue;\n  }\n\n  const d = new Date(ev.iso);\n  const timeText = fmtTime.format(d);\n  message += `• ${timeText} — ${ev.title}\\n`;\n}\n\nreturn [{ json: { message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        -16
+      ],
+      "id": "bf4cc65b-cd0b-47ab-957b-974dc685bd3f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "chatId": "320636179",
+        "text": "={{ $json.message }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        -16
+      ],
+      "id": "28befae4-2371-4311-a014-08be683b5a83",
+      "name": "Send a text message",
+      "webhookId": "0bb87825-6e26-4877-8e97-63f1df8676f1",
+      "credentials": {
+        "telegramApi": {
+          "id": "NbjVpzkfhKqMHv9B",
+          "name": "Telegram account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-02-26T02:52:57.127-05:00",
+          "Readable date": "February 26th 2026, 2:52:57 am",
+          "Readable time": "2:52:57 am",
+          "Day of week": "Thursday",
+          "Year": "2026",
+          "Month": "February",
+          "Day of month": "26",
+          "Hour": "02",
+          "Minute": "52",
+          "Second": "57",
+          "Timezone": "America/New_York (UTC-05:00)"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "68f56d33-9a50-407e-b45b-84f3ee711c2e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3ccb07952a7b6131dd6942e66f15a8a332e5ff4197b9d6208967e8f9f96ffe54"
+  },
+  "id": "xfYqNb6sjghVl2cQ",
+  "tags": []
+}
