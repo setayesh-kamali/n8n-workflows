@@ -13,7 +13,7 @@ This automation:
 
 ## Workflow Structure
 
-Google Sheets Trigger → IF Node → Data Processing → Gmail
+Google Sheets , Trigger,  IF Node ,  Data Processing ,  Gmail
 
 ## Purpose
 
