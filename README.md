@@ -1,29 +1,49 @@
 # n8n-workflows
-Personal AI agents and automation workflows built with n8n.
-## About
-This repository contains small automation projects I build to learn and experiment with workflow automation.
-The focus is on creating simple but practical systems that connect tools like:
-- Google Sheets
-- Gmail
-- APIs
-- AI integrations
-## Example Workflow
-Sales Summary automation:
-- Detect changes in Google Sheets
-- Check conditions with IF logic
-- Count total orders
-- Send automatic email report
-## Why this repo
-I use this space to practice building automation systems and personal AI agents step by step.
-## Workflows
+This repository is where I build and experiment with automation workflows using n8n.
+I use it as a hands-on space to learn how different tools can talk to each other and how small systems can be designed to solve simple, real problems.
+---
+## What this repo is about
+Instead of just reading about automation, I prefer building things.
+Here I connect tools like:
+- Google Calendar  
+- Google Sheets  
+- Gmail  
+- Telegram  
+- External APIs  
+Each project focuses on one clear use case and is structured in its own folder with documentation and the exported workflow file.
+---
+## Projects
+###  Google Calendar → Telegram Automation
+This workflow sends my daily Google Calendar meetings to Telegram automatically.
+What it does:
+- Runs every day at a scheduled time  
+- Fetches that day's calendar events  
+- Formats the information using JavaScript  
+- Sends a clean message to Telegram  
+The goal of this project was to practice:
+- API integration  
+- Data formatting  
+- Scheduled automation  
+- Message delivery through a bot  
+Folder: `calendar-telegram-automation`
+---
+###  Sales Summary Automation
+This workflow monitors a Google Sheet and sends an email report when data changes.
+What it does:
+- Detects updates in Google Sheets  
+- Applies simple IF logic  
+- Processes and counts order data  
+- Sends an automated email via Gmail  
+The focus here was on:
+- Trigger-based workflows  
+- Conditional logic  
+- Data processing  
+- Email automation  
+Folder: `sales-summary-automation`
+---
+## Why I’m building this
+I’m using these projects to improve my system thinking and automation skills step by step.
+Each workflow is small, but built with intention:
+clear structure, readable logic, and practical use cases.
 
-### Sales Summary Automation
-
-Automatically sends an email report when Google Sheets data changes.
-
-Flow:
-
-- Google Sheets trigger detects updates
-- IF node checks conditions
-- Summarize node counts total orders
-- Gmail sends automated report
+This repository will grow as I continue building more integrations and experimenting with new ideas.
